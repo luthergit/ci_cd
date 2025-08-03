@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from config import PULL_URL, DIRECTORY
+from config import PULL_URL
 from pathlib import Path
 import os
 import subprocess
@@ -9,7 +9,7 @@ app = FastAPI()
 
 
 def pull_repo():
-    project_dir = Path(DIRECTORY)    
+    project_dir = Path.home()  
     # Create the directory
     project_dir.mkdir(exist_ok=True, parents=True)
     
