@@ -26,6 +26,9 @@ def pull_repo():
 def build_image():
     subprocess.run(["docker", "compose", "build"])
 
+def docker_down():
+    subprocess.run(["docker", "compose", "down"])
+
 def redeploy():
     subprocess.run(["docker", "compose", "up", "-d"])
 
@@ -34,6 +37,7 @@ def redeploy():
 def webhook():
     pull_repo()
     build_image()
+    docker_down()
     redeploy()
     return {"message": "Webhook received"}
 
