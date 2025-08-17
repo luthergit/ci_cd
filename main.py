@@ -33,7 +33,7 @@ def redeploy():
     subprocess.run(["docker", "compose", "up", "-d"])
 
 
-@app.get("/webhook")
+@app.post("/webhook")
 def webhook():
     pull_repo()
     build_image()
