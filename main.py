@@ -8,7 +8,7 @@ import subprocess
 app = FastAPI()
 
 
-def pull_repo():
+def pull_repo(project_name):
     project_dir = Path.home()  
     # Create the directory
     project_dir.mkdir(exist_ok=True, parents=True)
@@ -17,10 +17,12 @@ def pull_repo():
 
     # Change to the directory (convert Path to string)
     os.chdir(str(project_dir))
-    repo_name = os.path.basename(PULL_URL).replace('.git', '')
+    # repo_name = os.path.basename(PULL_URL).replace('.git', '')
+    repo_name = project_name
 
-    subprocess.run(["git", "clone", PULL_URL])
-    
+    # subprocess.run(["git", "clone", PULL_URL])
+    subprocess.run(["git", "clone", clone_url])
+
     os.chdir(str(repo_name))
 
 def build_image():
@@ -35,7 +37,11 @@ def redeploy():
 
 @app.post("/webhook")
 def webhook():
-    pull_repo()
+
+    payload = await request.json()
+    repo_name = payload['repository']['name']
+    clone_url = payload['repository']['clone_url']
+    pull_repo(repo_name, clone_url)
     build_image()
     docker_down()
     redeploy()
