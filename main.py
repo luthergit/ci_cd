@@ -36,7 +36,7 @@ def redeploy():
 
 
 @app.post("/webhook")
-def webhook():
+async def webhook():
 
     payload = await request.json()
     repo_name = payload['repository']['name']
