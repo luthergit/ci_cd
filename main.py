@@ -3,6 +3,7 @@ from config import PULL_URL
 from pathlib import Path
 import os
 import subprocess
+import requests
 
 
 app = FastAPI()
