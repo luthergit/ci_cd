@@ -1,15 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from config import PULL_URL
 from pathlib import Path
 import os
 import subprocess
-import requests
 
 
 app = FastAPI()
 
 
-def pull_repo(project_name):
+def pull_repo(project_name, clone_url):
     project_dir = Path.home()  
     # Create the directory
     project_dir.mkdir(exist_ok=True, parents=True)
@@ -37,7 +36,7 @@ def redeploy():
 
 
 @app.post("/webhook")
-async def webhook():
+async def webhook(request: Request):
 
     payload = await request.json()
     repo_name = payload['repository']['name']
