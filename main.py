@@ -21,9 +21,18 @@ def pull_repo(project_name, clone_url):
     repo_name = project_name
 
     # subprocess.run(["git", "clone", PULL_URL])
-    subprocess.run(["git", "clone", clone_url])
+    # subprocess.run(["git", "clone", clone_url])
 
-    os.chdir(str(repo_name))
+    # os.chdir(str(repo_name))
+
+    p = Path(repo_name)
+    if p.exists():
+        os.chdir(str(p))
+        subprocess.run(["git", "pull"])
+    else:
+        os.chdir(str(project_dir))
+        subprocess.run(["git", "clone", clone_url])
+        os.chdir(str(repo_name))
 
 def build_image():
     subprocess.run(["docker", "compose", "build"])
@@ -33,7 +42,6 @@ def docker_down():
 
 def redeploy():
     subprocess.run(["docker", "compose", "up", "-d"])
-
 
 @app.post("/webhook")
 async def webhook(request: Request):
