@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from config import PULL_URL
 from pathlib import Path
 import os
@@ -43,18 +43,21 @@ def docker_down():
 def redeploy():
     subprocess.run(["docker", "compose", "up", "-d"])
 
-@app.post("/webhook")
-async def webhook(request: Request):
-
-    payload = await request.json()
-    repo_name = payload['repository']['name']
-    clone_url = payload['repository']['clone_url']
-    
+def run_pipeline(repo_name:str, clone_url: str):
     pull_repo(repo_name, clone_url)
     build_image()
     docker_down()
     redeploy()
-    return {"message": "Webhook received"}
+
+@app.post("/webhook")
+async def webhook(request: Request, background_tasks: BackgroundTasks):
+
+    payload = await request.json()
+    repo_name = payload['repository']['name']
+    clone_url = payload['repository']['clone_url']
+    background_tasks.add_task(run_pipeline, repo_name, clone_url)
+
+    return {"message": "Webhook received and pipelinescheduled"}
 
 @app.get("/")
 def home():
